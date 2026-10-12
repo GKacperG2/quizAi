@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from quiz_assistant.ai.course_context import COURSE_CONTEXT_TOKEN_RESERVE
 from quiz_assistant.models import ApiConfig
 
 
@@ -69,7 +70,8 @@ def estimate_request_reservation(config: ApiConfig, frame_count: int = 1) -> flo
         config.model, MODEL_PRICES_PER_MILLION["gpt-6.1-sol"]
     )
     # Conservative local estimate, not a provider-side spending cap.
-    raw = ((2000 + 8000 * frame_count) * input_price + config.max_output_tokens * output_price) / 1_000_000
+    raw = ((2000 + COURSE_CONTEXT_TOKEN_RESERVE + 8000 * frame_count) * input_price
+           + config.max_output_tokens * output_price) / 1_000_000
     return raw * 1.3
 
 

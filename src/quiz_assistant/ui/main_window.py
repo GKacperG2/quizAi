@@ -81,7 +81,8 @@ class MainWindow(QMainWindow):
         grid.addWidget(self._label(
             "Analiza wysyła wybrane obrazy do OpenAI i może naliczać opłaty. "
             "Brak automatycznych ponowień. Budżet to lokalny szacunek sesji, nie twardy limit konta.\n"
-            "Bez materiałów kursu, wykonywania kodu i automatycznego zaznaczania odpowiedzi.\n"
+            "Zawiera krótki, wbudowany kontekst kursu. Bez importu plików, wykonywania kodu "
+            "i automatycznego zaznaczania odpowiedzi.\n"
             "Używaj za zgodą prowadzącego. Zamknięcie okna pozostawia program w zasobniku."
         ), 5, 0, 1, 2)
         grid.setRowStretch(6, 1)

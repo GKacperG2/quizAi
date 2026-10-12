@@ -2,7 +2,7 @@
 
 Python 3.13 + PySide6: zaznaczony obszar ekranu → obrazy w RAM → jedno żądanie OpenAI Responses API → podpowiedź. Do nauki i pracy za zgodą prowadzącego. Nie klika odpowiedzi, nie wykonuje kodu z obrazów i nie obchodzi zabezpieczeń.
 
-**Wersja 0.2 — do odbioru na docelowym pulpicie, nie gotowy instalator.** Testy offline sprawdzają aplikację, nie trafność modelu. Brak gwarancji poprawnej odpowiedzi albo ukończenia jej w 20 sekund.
+**Wersja 0.3 — do odbioru na docelowym pulpicie, nie gotowy instalator.** Testy offline sprawdzają aplikację, nie trafność modelu. Brak gwarancji poprawnej odpowiedzi albo ukończenia jej w 20 sekund.
 
 ## Pierwsze uruchomienie
 
@@ -65,7 +65,9 @@ Tekst nie jest interpretowany jako HTML. Kod pozostaje tekstem, z zachowaniem li
 - Bez usage koszt pozostaje **niepewny**, nie zerowy. Anulowanie nie gwarantuje przerwania naliczania po stronie dostawcy.
 - Budżet jest lokalny, resetuje się po restarcie i nie jest twardym limitem konta. Ustaw własne limity także po stronie dostawcy.
 - Test dostępu sprawdza autoryzację i model; nie wysyła obrazów ani nie generuje odpowiedzi.
-- Brak importu materiałów, profili kursów, OCR, MOV, PDF, prezentacji lub wyszukiwania kontekstu.
+- Do instrukcji modelu dołączany jest krótki, ręcznie opracowany kontekst z dostarczonych notatek o teorii kategorii i programowaniu funkcyjnym w JavaScript. Treść widocznego pytania ma nad nim pierwszeństwo.
+- Kontekst jest wersjonowany w `src/quiz_assistant/ai/course_context.py`. Nie jest to import plików ani RAG; aplikacja nadal nie przetwarza MOV, PDF, prezentacji i nie wyszukuje zewnętrznych materiałów.
+- Stały kontekst zwiększa liczbę tokenów wejściowych. Lokalna rezerwa budżetowa uwzględnia dodatkowy zapas, a ostateczny koszt jest rozliczany z `usage`, jeśli API go zwróci.
 
 Konfigurację oparto na [dokumentacji GPT-6.1 Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol) i [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=responses). Dostęp na konkretnym koncie, trafność i rzeczywisty czas nie były sprawdzane płatnymi wywołaniami.
 
