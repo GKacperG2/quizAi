@@ -106,16 +106,21 @@ class OverlayAppearance:
     contrast: int = 100
     font_size: int = 16
     width: int = 420
+    show_border: bool = True
+    border_opacity: int = 80
 
     def __post_init__(self) -> None:
         if self.theme not in ("dark", "light"):
             raise ValueError("Nieprawidłowy motyw.")
         for name, low, high in (
-            ("opacity", 50, 100), ("brightness", 0, 100), ("contrast", 0, 100),
+            ("opacity", 0, 100), ("brightness", 0, 100), ("contrast", 0, 100),
             ("font_size", 12, 24), ("width", 320, 720),
+            ("border_opacity", 0, 100),
         ):
             if not low <= getattr(self, name) <= high:
                 raise ValueError(f"Nieprawidłowy parametr wyglądu: {name}")
+        if not isinstance(self.show_border, bool):
+            raise ValueError("Nieprawidłowe ustawienie obwódki.")
 
 
 DEFAULT_SHORTCUTS: dict[HotkeyAction, str] = {

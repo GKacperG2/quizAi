@@ -16,6 +16,8 @@ from PySide6.QtWidgets import (
     QKeySequenceEdit,
     QSpinBox,
     QPushButton,
+    QHBoxLayout,
+    QSlider,
 )
 
 from quiz_assistant.models import ApiConfig, HotkeyAction, OverlayAppearance
@@ -202,7 +204,10 @@ class AppearanceDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle("Wygląd podpowiedzi")
         layout = QVBoxLayout(self)
-        note = QLabel("Podgląd na żywo. Krycie dotyczy tylko tła — tekst pozostaje nieprzezroczysty.")
+        note = QLabel(
+            "Podgląd na żywo. Ustaw 0% krycia i wyłącz obwódkę, aby pozostawić sam tekst. "
+            "Tekst pozostaje nieprzezroczysty i czytelny."
+        )
         note.setWordWrap(True)
         layout.addWidget(note)
         form = QFormLayout()
@@ -213,19 +218,48 @@ class AppearanceDialog(QDialog):
         form.addRow("Motyw:", self._theme)
         self._editors = {}
         for name, title, low, high, suffix in (
-            ("opacity", "Krycie tła:", 50, 100, "%"),
+            ("opacity", "Widoczność tła:", 0, 100, "%"),
             ("brightness", "Jasność tła:", 0, 100, "%"),
             ("contrast", "Kontrast tekstu:", 0, 100, "%"),
             ("font_size", "Rozmiar tekstu:", 12, 24, " px"),
             ("width", "Szerokość panelu:", 320, 720, " px"),
         ):
+            slider = QSlider(Qt.Orientation.Horizontal)
+            slider.setRange(low, high)
+            slider.setValue(getattr(appearance, name))
+            slider.setMinimumWidth(210)
             editor = QSpinBox()
             editor.setRange(low, high)
             editor.setSuffix(suffix)
             editor.setValue(getattr(appearance, name))
-            self._editors[name] = editor
+            slider.valueChanged.connect(editor.setValue)
+            editor.valueChanged.connect(slider.setValue)
             editor.valueChanged.connect(self._changed)
-            form.addRow(title, editor)
+            row = QHBoxLayout()
+            row.addWidget(slider, 1)
+            row.addWidget(editor)
+            self._editors[name] = editor
+            form.addRow(title, row)
+        self._show_border = QCheckBox("Pokaż obwódkę panelu")
+        self._show_border.setChecked(appearance.show_border)
+        self._show_border.toggled.connect(self._border_toggled)
+        form.addRow("Obwódka:", self._show_border)
+        border_row = QHBoxLayout()
+        self._border_slider = QSlider(Qt.Orientation.Horizontal)
+        self._border_slider.setRange(0, 100)
+        self._border_slider.setValue(appearance.border_opacity)
+        self._border_slider.setMinimumWidth(210)
+        self._border_opacity = QSpinBox()
+        self._border_opacity.setRange(0, 100)
+        self._border_opacity.setSuffix("%")
+        self._border_opacity.setValue(appearance.border_opacity)
+        self._border_slider.valueChanged.connect(self._border_opacity.setValue)
+        self._border_opacity.valueChanged.connect(self._border_slider.setValue)
+        self._border_opacity.valueChanged.connect(self._changed)
+        border_row.addWidget(self._border_slider, 1)
+        border_row.addWidget(self._border_opacity)
+        form.addRow("Widoczność obwódki:", border_row)
+        self._border_toggled(appearance.show_border)
         self._theme.currentIndexChanged.connect(self._changed)
         layout.addLayout(form)
         reset = QPushButton("Przywróć domyślne")
@@ -237,15 +271,26 @@ class AppearanceDialog(QDialog):
         layout.addWidget(buttons)
 
     def appearance(self):
-        return OverlayAppearance(theme=self._theme.currentData(),
-                                 **{k: v.value() for k, v in self._editors.items()})
+        return OverlayAppearance(
+            theme=self._theme.currentData(),
+            show_border=self._show_border.isChecked(),
+            border_opacity=self._border_opacity.value(),
+            **{k: v.value() for k, v in self._editors.items()},
+        )
 
     def _changed(self):
         self.changed.emit(self.appearance())
 
+    def _border_toggled(self, visible):
+        self._border_slider.setEnabled(visible)
+        self._border_opacity.setEnabled(visible)
+        self._changed()
+
     def _reset(self):
         defaults = OverlayAppearance()
         self._theme.setCurrentIndex(0)
+        self._show_border.setChecked(defaults.show_border)
+        self._border_opacity.setValue(defaults.border_opacity)
         for name, editor in self._editors.items():
             editor.setValue(getattr(defaults, name))
 

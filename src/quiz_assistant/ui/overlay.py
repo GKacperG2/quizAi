@@ -63,6 +63,8 @@ class OverlayWindow(QWidget):
         self.setFixedWidth(appearance.width)
         base = round(10 + appearance.brightness * .55) if appearance.theme == "dark" else round(205 + appearance.brightness * .5)
         self._background = QColor(base, base, base, round(255 * appearance.opacity / 100))
+        border_alpha = round(255 * appearance.border_opacity / 100) if appearance.show_border else 0
+        self._border = QColor(96, 159, 250, border_alpha)
         text = round(170 + appearance.contrast * .85) if appearance.theme == "dark" else round(95 - appearance.contrast * .95)
         accent = "#9ecbff" if appearance.theme == "dark" else "#14529b"
         self.setStyleSheet(
@@ -80,7 +82,7 @@ class OverlayWindow(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         painter.setBrush(self._background)
-        painter.setPen(QPen(QColor("#609ffa"), 1.5))
+        painter.setPen(QPen(self._border, 1.5) if self.appearance.show_border else Qt.PenStyle.NoPen)
         painter.drawRoundedRect(self.rect().adjusted(1, 1, -1, -1), 16, 16)
 
     def show_loading(self, generation_id, elapsed=0, limit=20):

@@ -71,7 +71,7 @@ Konfigurację oparto na [dokumentacji GPT-6.1 Sol](https://developers.openai.com
 
 ## Wygląd
 
-Ciemny/jasny motyw, krycie tła 50–100% (domyślnie 95%), jasność, kontrast tekstu, tekst 12–24 px i szerokość 320–720 px. Podgląd na żywo; anulowanie przywraca poprzedni wygląd. Krycie nie zmienia przezroczystości tekstu.
+Ciemny/jasny motyw, widoczność tła 0–100% (domyślnie 95%), jasność, kontrast tekstu, tekst 12–24 px i szerokość 320–720 px. Obwódkę można wyłączyć albo osobno ustawić jej widoczność. Przy tle 0% i wyłączonej obwódce pozostaje sam tekst. Podgląd działa na żywo; anulowanie przywraca poprzedni wygląd. Krycie nie zmienia przezroczystości tekstu.
 
 Panel ma flagi Qt i Win32 zapobiegające aktywacji i przepuszczające wejście. Wymaga to odbioru na docelowym Windows/Edge/Chrome — nie jest deklaracją „niewykrywalności”.
 
